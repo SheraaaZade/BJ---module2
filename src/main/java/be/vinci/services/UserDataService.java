@@ -73,7 +73,7 @@ public class UserDataService {
             return null;
         tempUser = new User();
         tempUser.setLogin(login);
-        tempUser.setPassword(password);
+        tempUser.setPassword(tempUser.hashPassword(password));
 
         User user = createOne(tempUser);
         if(user == null)
