@@ -13,10 +13,10 @@ Content-Type: application/json
 }
 
 ### Delete One film
-DELETE {{baseUrl}}/films/5
+DELETE {{baseUrl}}/films/1
 
 ### Update One film
-PUT {{baseUrl}}/films/4
+PUT {{baseUrl}}/films/2
 Content-Type: application/json
 
 {

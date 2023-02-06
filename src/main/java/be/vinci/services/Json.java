@@ -14,33 +14,38 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Json {
+public class Json<T> {
 
   private static final String DB_FILE_PATH = "db.json";
   private static Path pathToDb = Paths.get(DB_FILE_PATH);
   private static final String COLLECTION_NAME = "films";
   private final static ObjectMapper jsonMapper = new ObjectMapper();
+  private Class<T> type;
 
-  public static void serialize(List<Film> films) {
+  public Json(Class<T> type) {
+    this.type = type;
+  }
+
+  public void serialize(List<T> items, String collectionName) {
     try {
       // if no DB file, write a new collection to a new db file
       if (!Files.exists(pathToDb)) {
-        // Create an object and add a JSON array as POJO, e.g. { films:[...]}
-        ObjectNode newCollection = jsonMapper.createObjectNode().putPOJO(COLLECTION_NAME, films);
+        // Create an object and add a JSON array as POJO, e.g. { items:[...]}
+        ObjectNode newCollection = jsonMapper.createObjectNode().putPOJO(COLLECTION_NAME, items);
         jsonMapper.writeValue(pathToDb.toFile(),
             newCollection); // write the JSON Object in the DB file
         return;
       }
       // get all collections : can be read as generic JsonNode, if it can be Object or Array;
       JsonNode allCollections = jsonMapper.readTree(
-          pathToDb.toFile()); // e.g. { users:[...], films:[...]}
-      // remove current collection, e.g. remove the array of films
+          pathToDb.toFile()); // e.g. { users:[...], items:[...]}
+      // remove current collection, e.g. remove the array of items
       if (allCollections.has(COLLECTION_NAME)) {
         ((ObjectNode) allCollections).remove(COLLECTION_NAME); //e.g. it leaves { users:[...]}
       }
       // Prepare a JSON array from the list of POJOs for the collection to be updated, e.g. [{"film1",...}, ...]
-      ArrayNode updatedCollection = jsonMapper.valueToTree(films);
-      // Add the JSON array in allCollections, e.g. : { users:[...], films:[...]}
+      ArrayNode updatedCollection = jsonMapper.valueToTree(items);
+      // Add the JSON array in allCollections, e.g. : { users:[...], items:[...]}
       ((ObjectNode) allCollections).putArray(COLLECTION_NAME).addAll(updatedCollection);
       // write to the db file allCollections
       jsonMapper.writeValue(pathToDb.toFile(), allCollections);
@@ -49,7 +54,7 @@ public class Json {
     }
   }
 
-  public static List<Film> parse() {
+  public List<T> parse(String collectionName) {
     try {
       // get allCollections
       JsonNode node = jsonMapper.readTree(pathToDb.toFile());
@@ -58,15 +63,15 @@ public class Json {
       JsonNode collection = node.get(COLLECTION_NAME);
         if (collection == null) // Send an empty list if there is not the requested collection
         {
-            return new ArrayList<Film>();
+            return (List<T>) new ArrayList<T>();
         }
       // convert the JsonNode to a List of POJOs & return it
-      return jsonMapper.readerForListOf(Film.class).readValue(collection);
+      return jsonMapper.readerForListOf(type).readValue(collection);
     } catch (FileNotFoundException e) {
-      return new ArrayList<Film>(); // send an empty list if there is no db file
+      return (List<T>) new ArrayList<T>(); // send an empty list if there is no db file
     } catch (IOException e) {
       e.printStackTrace();
-      return new ArrayList<Film>();
+      return (List<T>) new ArrayList<T>();
     }
   }
 
