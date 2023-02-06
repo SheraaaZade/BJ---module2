@@ -26,6 +26,12 @@ public class UserDataService {
         return items.stream().filter(item -> item.getId() == id).findAny().orElse(null);
     }
 
+    public User getOne(String login) {
+        var items = jsonDB.parse(COLLECTION_NAME);
+        return items.stream().filter(item -> item.getLogin().equals(login)).findAny().orElse(null);
+
+    }
+
     public User createOne(User item) {
         var items = jsonDB.parse(COLLECTION_NAME);
         item.setId(nextItemId());
@@ -50,6 +56,32 @@ public class UserDataService {
         try{
             token = JWT.create().withIssuer("auth0")
                     .withClaim("user",user.getId()).sign(this.jwtAlgorithm);
+            ObjectNode publicUser = jsonMapper.createObjectNode()
+                    .put("token", token)
+                    .put("id", user.getId())
+                    .put("login", user.getLogin());
+            return publicUser;
+        }catch (Exception e){
+            System.out.println("Unable to create token");
+            return null;
+        }
+    }
+
+    public ObjectNode register (String login, String password){
+        User tempUser = getOne(login);
+        if(tempUser != null) //already exists !
+            return null;
+        tempUser = new User();
+        tempUser.setLogin(login);
+        tempUser.setPassword(password);
+
+        User user = createOne(tempUser);
+        if(user == null)
+            return null;
+        String token;
+        try{
+            token = JWT.create().withIssuer("auth0")
+                    .withClaim("user", user.getId()).sign(this.jwtAlgorithm);
             ObjectNode publicUser = jsonMapper.createObjectNode()
                     .put("token", token)
                     .put("id", user.getId())
