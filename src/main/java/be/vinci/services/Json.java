@@ -1,6 +1,7 @@
 package be.vinci.services;
 
 import be.vinci.Film;
+import be.vinci.services.utils.Config;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class Json<T> {
 
-  private static final String DB_FILE_PATH = "db.json";
+  private static final String DB_FILE_PATH = Config.getProperty("DatabaseFilePath");
   private static Path pathToDb = Paths.get(DB_FILE_PATH);
   private static final String COLLECTION_NAME = "films";
   private final static ObjectMapper jsonMapper = new ObjectMapper();
