@@ -1,6 +1,5 @@
 package be.vinci.services;
 
-import be.vinci.Film;
 import be.vinci.services.utils.Config;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

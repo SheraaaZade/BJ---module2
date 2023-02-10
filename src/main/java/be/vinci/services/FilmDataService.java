@@ -1,6 +1,6 @@
 package be.vinci.services;
 
-import be.vinci.Film;
+import be.vinci.domain.Film;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.List;

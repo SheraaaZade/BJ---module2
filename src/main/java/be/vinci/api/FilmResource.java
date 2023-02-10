@@ -1,17 +1,15 @@
 package be.vinci.api;
 
-import be.vinci.Film;
+import be.vinci.domain.Film;
 import be.vinci.api.filters.Authorize;
 import be.vinci.domain.User;
 import be.vinci.services.FilmDataService;
-import be.vinci.services.Json;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.List;
 
